@@ -3,7 +3,7 @@ server/logs/
 
 
 
+web/.vscode
+web/node_modules/
 
-
-
-record.txt
+__pycache__/

@@ -1,27 +1,32 @@
 import os
 
-# 服务路径
-SERVER_PATH = os.path.dirname(os.path.abspath(__file__))
+from datetime import datetime
+from pydantic_settings import BaseSettings
 
-# 日志配置
-LOG_NAME = os.path.basename(os.getcwd())
-LOG_PATH = f"{SERVER_PATH}/logs/{LOG_NAME}.log"    # log 存储路径
-LOG_LEVEL = os.getenv("LOG_LEVEL", "DEBUG")  # 日志级别
-LOG_COLOR = True  # 是否带有颜色
-LOG_IS_WRITE_TO_CONSOLE = True  # 是否打印到控制台
-LOG_IS_WRITE_TO_FILE = True  # 是否写文件
-LOG_MODE = "a"  # 写文件的模式
-LOG_MAX_BYTES = 10 * 1024 * 1024  # 每个日志文件的最大字节数
-LOG_BACKUP_COUNT = 20  # 日志文件保留数量
-LOG_ENCODING = "utf8"  # 日志文件编码
-# 是否详细的打印异常
-PRINT_EXCEPTION_DETAILS = True
-# 设置不带颜色的日志格式
-LOG_FORMAT = "%(threadName)s|%(asctime)s|%(filename)s|%(funcName)s|line:%(lineno)d|%(levelname)s| %(message)s"
-# 设置带有颜色的日志格式
-os.environ["LOGURU_FORMAT"] = (
-    "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | "
-    "<level>{level: <8}</level> | "
-    "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>line:{line}</cyan> | <level>{message}</level>"
-)
-OTHERS_LOG_LEVAL = "ERROR"  # 第三方库的log等级
+class Config(BaseSettings):
+
+    """
+    配置类，继承自BaseSettings，用于存储应用程序的各种配置参数
+    """
+    # 项目地址
+    SERVER_PATH: str = os.path.dirname(os.path.abspath(__file__))       # 项目地址：获取当前文件所在目录的绝对路径
+    PROJECT_NAME: str = os.path.basename(os.getcwd())                   # 项目名称：获取当前工作目录的名称
+
+    # 日志配置
+    LOG_DIR: str = f"{SERVER_PATH}/logs"                                                          # log 存储目录：日志文件保存的路径
+    LOG_LEVEL: str = "DEBUG"                                                                      # 日志等级：设置日志记录的级别为DEBUG
+    LOG_ROTATION: str = "10 MB"                                                                   # 日志文件大小达到 10MB 时轮转：单个日志文件的最大大小
+    LOG_BACKUP_COUNT: int = 7                                                                     # 保留日志文件个数：保留的日志文件数量
+    LOG_COLOR: bool = True                                                                        # 是否启用彩色日志
+    LOG_FILE_ZIP: bool = True                                                                     # 是否启用日志文件压缩：控制日志文件是否被压缩
+    LOG_FILE: str = f"{SERVER_PATH}/logs/{PROJECT_NAME}_{datetime.now().strftime('%Y%m%d')}.log"  # 日志文件：日志文件的完整路径，包含项目名称和当前日期
+    LOG_FORMAT: str = (                                                                           # 日志格式：定义日志输出的格式
+        "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | "
+        "<level>{level: <4}</level> | "
+        "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>line:{line}</cyan> | <level>{message}</level>"
+    )                                                                                   
+
+
+
+
+config = Config()
